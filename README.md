@@ -57,7 +57,7 @@ If you would like to disable the 'shake to reveal humbug' feature, just remove "
 Pull requests welcome. Please add tests where appropriate.
 
 ### Maintainers
-* [Matt Edmonds](mailto:matthewedmonds@me.com) ([github](https://github.com/medmonds)), Flywheel, San Francisco
+* [Matt Edmonds](mailto:matthewedmonds@me.com) ([github](https://github.com/medmonds)), UserTesting, San Francisco
 
 ### Dependencies
 
@@ -67,6 +67,9 @@ Pull requests welcome. Please add tests where appropriate.
 ### Tests
 
 To run the Cedar tests, select the Specs target and run under the iOS 7.1 simulator.
+
+<br/><br/>
+This software has and will continue to be modified from its original form.
 
 <br/><br/>
 Copyright (c) 2014 Flywheel Software. This software is licensed under the GPL v2.0 license. 
