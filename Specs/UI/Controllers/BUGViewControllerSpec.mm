@@ -33,6 +33,7 @@ describe(@"BUGViewController", ^{
         originalKeyWindow = [UIApplication sharedApplication].keyWindow;
         [[NSUserDefaults standardUserDefaults] setObject:@"Default Name" forKey:@"humbug.requestorsName"];
         [BUGViewController showHideDebugWindow];
+        controller.view should_not be_nil;
     });
     
     afterEach(^{
@@ -306,6 +307,7 @@ describe(@"BUGViewController", ^{
                 controller = [BUGViewController createSharedInstanceWithLogFileData:logFileDataBlock trackerAPIToken:nil trackerProjectID:nil];
                 originalKeyWindow = [UIApplication sharedApplication].keyWindow;
                 [BUGViewController showHideDebugWindow];
+                controller.view should_not be_nil;
             });
             
             it(@"should fill in the requestor's name", ^{
@@ -363,6 +365,7 @@ describe(@"BUGViewController", ^{
         
         context(@"when a 'Bug Title' has not been added", ^{
             beforeEach(^{
+                spy_on(controller.storyTitleTextView);
                 #pragma clang diagnostic push
                 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                 [controller.navigationItem.rightBarButtonItem.target performSelector:controller.navigationItem.rightBarButtonItem.action withObject:nil];
@@ -386,13 +389,15 @@ describe(@"BUGViewController", ^{
                 });
                 
                 it(@"should place the cursor in the 'Bug Title' textView", ^{
-                    controller.storyTitleTextView.isFirstResponder should be_truthy;
+                    // does not become first responder until the alert finishes dismissing.
+                    controller.storyTitleTextView should have_received("becomeFirstResponder");
                 });
             });
         });
         
         context(@"when a 'Requestor's Name' has not been added", ^{
             beforeEach(^{
+                spy_on(controller.requestorNameTextField);
                 [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"humbug.requestorsName"];
                 controller.requestorNameTextField.text = nil;
                 controller.storyTitleTextView.text = @"a story title";
@@ -409,10 +414,6 @@ describe(@"BUGViewController", ^{
                 [[UIAlertView currentAlertView] buttonTitleAtIndex:0] should equal(@"OK");
             });
             
-            it(@"should place the cursor in the 'Requestor's Name' textView", ^{
-                controller.requestorNameTextField.isFirstResponder should be_truthy;
-            });
-            
             context(@"when the 'OK' button is tapped", ^{
                 beforeEach(^{
                     [[UIAlertView currentAlertView] dismissWithClickedButtonIndex:0 animated:NO];
@@ -420,6 +421,11 @@ describe(@"BUGViewController", ^{
                 
                 it(@"should dismiss the alert", ^{
                     [UIAlertView currentAlertView] should be_nil;
+                });
+                
+                it(@"should place the cursor in the 'Requestor's Name' textView", ^{
+                    // does not become first responder until the alert finishes dismissing.
+                    controller.requestorNameTextField should have_received(@selector(becomeFirstResponder));
                 });
             });
         });
