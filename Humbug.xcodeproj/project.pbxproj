@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2CFD6C781B55DD8A00295A6D /* NSData+BUGCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFD6C771B55DD8A00295A6D /* NSData+BUGCompression.m */; };
 		2CFD6C791B55DD8A00295A6D /* NSData+BUGCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFD6C771B55DD8A00295A6D /* NSData+BUGCompression.m */; };
+		2CFD6C731B55BD7600295A6D /* BUGTrelloInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFD6C721B55BD7600295A6D /* BUGTrelloInterface.m */; };
+		2CFD6C741B55BD7600295A6D /* BUGTrelloInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFD6C721B55BD7600295A6D /* BUGTrelloInterface.m */; };
 		C926578919D1EC2500C995E7 /* libCedar-StaticLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A2BBD019AFBC0600662321 /* libCedar-StaticLib.a */; };
 		C95A286A19B137FB00535906 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A2B39A19AFA66100662321 /* Foundation.framework */; };
 		C95A286B19B137FB00535906 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A2B3CB19AFA9D500662321 /* CoreGraphics.framework */; };
@@ -226,8 +228,8 @@
 
 /* Begin PBXFileReference section */
 		2CFD6C661B55BCD100295A6D /* BUGInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BUGInterface.h; path = Domain/Interfaces/BUGInterface.h; sourceTree = "<group>"; };
-		2CFD6C761B55DD8A00295A6D /* NSData+BUGCompression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+BUGCompression.h"; path = "Domain/Extensions/NSData+BUGCompression.h"; sourceTree = "<group>"; };
-		2CFD6C771B55DD8A00295A6D /* NSData+BUGCompression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+BUGCompression.m"; path = "Domain/Extensions/NSData+BUGCompression.m"; sourceTree = "<group>"; };
+		2CFD6C711B55BD7600295A6D /* BUGTrelloInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BUGTrelloInterface.h; path = Domain/Interfaces/BUGTrelloInterface.h; sourceTree = "<group>"; };
+		2CFD6C721B55BD7600295A6D /* BUGTrelloInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BUGTrelloInterface.m; path = Domain/Interfaces/BUGTrelloInterface.m; sourceTree = "<group>"; };
 		C95A284E19B12F5400535906 /* Cedar-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Cedar-iOS.framework"; path = "Specs/Frameworks/Cedar-iOS.framework"; sourceTree = "<group>"; };
 		C95A286919B137FB00535906 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C95A286F19B137FB00535906 /* Demo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Demo-Info.plist"; sourceTree = "<group>"; };
@@ -621,6 +623,8 @@
 				2CFD6C661B55BCD100295A6D /* BUGInterface.h */,
 				C9A2B43319AFB2B500662321 /* BUGPivotalTrackerInterface.h */,
 				C9A2B43419AFB2B500662321 /* BUGPivotalTrackerInterface.m */,
+				2CFD6C711B55BD7600295A6D /* BUGTrelloInterface.h */,
+				2CFD6C721B55BD7600295A6D /* BUGTrelloInterface.m */,
 			);
 			name = Interfaces;
 			sourceTree = "<group>";
@@ -1087,6 +1091,7 @@
 				C95A287819B137FB00535906 /* BUGAppDelegate.m in Sources */,
 				C99EEBD219B658EF0039B82D /* BUGViewController.m in Sources */,
 				C9B57F3E19F8CA31001B946A /* FLEXMethodCallingViewController.m in Sources */,
+				2CFD6C741B55BD7600295A6D /* BUGTrelloInterface.m in Sources */,
 				C9B57F5019F8CA31001B946A /* FLEXFileBrowserTableViewController.m in Sources */,
 				C9B57F6019F8CA31001B946A /* FLEXDefaultsExplorerViewController.m in Sources */,
 				C9B57F4019F8CA31001B946A /* FLEXPropertyEditorViewController.m in Sources */,
@@ -1149,6 +1154,7 @@
 				C9B57F3D19F8CA31001B946A /* FLEXMethodCallingViewController.m in Sources */,
 				C9B57F6B19F8CA31001B946A /* FLEXObjectExplorerViewController.m in Sources */,
 				C9B57F7D19F8CA31001B946A /* FLEXHierarchyTableViewController.m in Sources */,
+				2CFD6C731B55BD7600295A6D /* BUGTrelloInterface.m in Sources */,
 				C9B57F3719F8CA31001B946A /* FLEXFieldEditorView.m in Sources */,
 				C9B57F4719F8CA31001B946A /* FLEXToolbarItem.m in Sources */,
 				C9B57F7519F8CA31001B946A /* FLEXResources.m in Sources */,
