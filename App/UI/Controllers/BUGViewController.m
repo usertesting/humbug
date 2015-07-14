@@ -9,7 +9,7 @@
 @property (weak, nonatomic, readwrite) UIWindow *originalKeyWindow;
 @property (strong, nonatomic, readwrite) UIWindow *window;
 @property (strong, nonatomic, readwrite) UIImage *screenShot;
-@property (strong, nonatomic, readwrite) BUGPivotalTrackerInterface *trackerInterface;
+@property (strong, nonatomic, readwrite) id<BUGInterface> interface;
 @property (strong, nonatomic, readwrite) UINavigationController *navigationController;
 @property (copy, nonatomic) NSData * (^logFileData)();
 @end
@@ -57,7 +57,7 @@ static NSString *storyDescriptionPlaceholderText = @"Bug Description";
 
 - (instancetype)initWithLogFileData:(NSData * (^)())logData trackerAPIToken:(NSString *)token trackerProjectID:(NSString *)projectID {
     if (self = [super init]) {
-        self.trackerInterface = [[BUGPivotalTrackerInterface alloc] initWithAPIToken:token trackerProjectID:projectID];
+        self.interface = [[BUGPivotalTrackerInterface alloc] initWithAPIToken:token trackerProjectID:projectID];
         self.title = @"Debug";
         self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
         self.window.windowLevel = UIWindowLevelStatusBar;
@@ -215,7 +215,7 @@ static NSString *storyDescriptionPlaceholderText = @"Bug Description";
     NSString *descriptionText = [NSString stringWithFormat:@"%@\r\n%@\r\n%@\r\n\r\n%@", [self requestorName], [self currentDateAndTime], [self appVersionInfo], self.storyDescriptionTextView.text];
 
     __weak __typeof(self)weakSelf = self;
-    [self.trackerInterface createStoryWithStoryTitle:self.storyTitleTextView.text storyDescription:descriptionText image:imageData text:logData completion:^(BOOL success, NSError *error) {
+    [self.interface createStoryWithStoryTitle:self.storyTitleTextView.text storyDescription:descriptionText image:imageData text:logData completion:^(BOOL success, NSError *error) {
         if (success) {
             [weakSelf setDefaultViewConfiguration];
             hud.labelText = @"Success";
@@ -353,7 +353,7 @@ static NSString *storyDescriptionPlaceholderText = @"Bug Description";
     [self.view endEditing:YES];
     [BUGViewController showHideDebugWindow];
     [self setDefaultViewConfiguration];
-    [self.trackerInterface cancel];
+    [self.interface cancel];
 }
 
 - (IBAction)didTapFlexButton:(id)sender {

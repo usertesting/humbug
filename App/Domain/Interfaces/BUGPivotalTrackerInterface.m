@@ -1,9 +1,6 @@
 #import "BUGPivotalTrackerInterface.h"
 #import "zlib.h"
 
-typedef void (^SessionCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error);
-typedef void (^RequestSetupBlock)(NSMutableURLRequest *);
-
 @interface BUGPivotalTrackerInterface ()
 @property (strong, nonatomic, readwrite) NSString *apiToken, *projectID;
 

@@ -223,6 +223,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2CFD6C661B55BCD100295A6D /* BUGInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BUGInterface.h; path = Domain/Interfaces/BUGInterface.h; sourceTree = "<group>"; };
 		C95A284E19B12F5400535906 /* Cedar-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Cedar-iOS.framework"; path = "Specs/Frameworks/Cedar-iOS.framework"; sourceTree = "<group>"; };
 		C95A286919B137FB00535906 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C95A286F19B137FB00535906 /* Demo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Demo-Info.plist"; sourceTree = "<group>"; };
@@ -603,6 +604,7 @@
 		C9A2B43219AFB25900662321 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				2CFD6C661B55BCD100295A6D /* BUGInterface.h */,
 				C9A2B43319AFB2B500662321 /* BUGPivotalTrackerInterface.h */,
 				C9A2B43419AFB2B500662321 /* BUGPivotalTrackerInterface.m */,
 			);

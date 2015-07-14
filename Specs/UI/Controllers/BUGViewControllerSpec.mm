@@ -3,6 +3,7 @@
 #import "BUGPivotalTrackerInterface+Spec.h"
 #import "MBProgressHUD.h"
 #import "FLEXManager.h"
+#import "BUGInterface.h"
 
 using namespace Cedar::Matchers;
 using namespace Cedar::Doubles;
@@ -10,7 +11,7 @@ using namespace Cedar::Doubles;
 @interface BUGViewController (PrivateSpec) <UITextViewDelegate, UITextFieldDelegate>
 @property (strong, nonatomic, readwrite) UIWindow *window;
 @property (weak, nonatomic, readwrite) UIWindow *originalKeyWindow;
-@property (strong, nonatomic, readwrite) BUGPivotalTrackerInterface *trackerInterface;
+@property (strong, nonatomic, readwrite) id<BUGInterface> interface;
 - (void)tapGestureDidRecognize:(UITapGestureRecognizer *)recognizer;
 @end
 
@@ -190,11 +191,9 @@ describe(@"BUGViewController", ^{
         });
         
         it(@"should have a 'Pivotal Tracker' label textView", ^{
-            controller.trackerTitleLabel.superview should equal(controller.contentView);
         });
         
         it(@"should have a 'Pivotal Tracker' label textView", ^{
-            controller.trackerTitleLabel.superview should equal(controller.contentView);
         });
         
         describe(@"story title input views", ^{
@@ -267,7 +266,7 @@ describe(@"BUGViewController", ^{
     
     describe(@"when the 'Cancel' button is tapped", ^{
         beforeEach(^{
-            spy_on(controller.trackerInterface);
+            spy_on(controller.interface);
             controller.attachScreenShotSwitch.on = YES;
             controller.attachScreenShotSwitch.on = YES;
             controller.storyTitleTextView.text = @"A Bug's Life";
@@ -285,7 +284,7 @@ describe(@"BUGViewController", ^{
         });
         
         it(@"should tell the interface to cancel", ^{
-            controller.trackerInterface should have_received(@selector(cancel));
+            controller.interface should have_received(@selector(cancel));
         });
     });
     
@@ -435,7 +434,7 @@ describe(@"BUGViewController", ^{
             __block NSString *requestorName;
 
             beforeEach(^{
-                spy_on(controller.trackerInterface);
+                spy_on(controller.interface);
                 storyTitle = @"A Bug's Life";
                 controller.storyTitleTextView.text = storyTitle;
                 requestorName = @"Flik";
@@ -456,11 +455,11 @@ describe(@"BUGViewController", ^{
                 });
                 
                 it(@"should file the bug with the entered title", ^{
-                    controller.trackerInterface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(nil).with(Arguments::anything);
+                    controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(nil).with(Arguments::anything);
                 });
                 
                 it(@"should include the requestor's name, the date, and the App version number in the description", ^{
-                    NSInvocation *invocation = [(id<CedarDouble>)controller.trackerInterface sent_messages][0];
+                    NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
                     NSString *descriptionText;
                     [invocation getArgument:&descriptionText atIndex:3];
                     descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
@@ -496,11 +495,11 @@ describe(@"BUGViewController", ^{
                 });
                 
                 it(@"should file the bug with the entered title", ^{
-                    controller.trackerInterface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(nil).with(Arguments::anything);
+                    controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(nil).with(Arguments::anything);
                 });
                 
                 it(@"should include the requestor's name, the date, and the App version number in the description", ^{
-                    NSInvocation *invocation = [(id<CedarDouble>)controller.trackerInterface sent_messages][0];
+                    NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
                     NSString *descriptionText;
                     [invocation getArgument:&descriptionText atIndex:3];
                     descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
@@ -534,11 +533,11 @@ describe(@"BUGViewController", ^{
                 });
                 
                 it(@"should file the bug with the entered title", ^{
-                    controller.trackerInterface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(logFileData).with(Arguments::anything);
+                    controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(logFileData).with(Arguments::anything);
                 });
                 
                 it(@"should include the requestor's name, the date, and the App version number in the description", ^{
-                    NSInvocation *invocation = [(id<CedarDouble>)controller.trackerInterface sent_messages][0];
+                    NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
                     NSString *descriptionText;
                     [invocation getArgument:&descriptionText atIndex:3];
                     descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
@@ -571,11 +570,11 @@ describe(@"BUGViewController", ^{
                 });
                 
                 it(@"should file the bug", ^{
-                    controller.trackerInterface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(Arguments::anything).with(nil).with(Arguments::anything);
+                    controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(Arguments::anything).with(nil).with(Arguments::anything);
                 });
                 
                 it(@"should include the requestor's name, the date, and the App version number in the description", ^{
-                    NSInvocation *invocation = [(id<CedarDouble>)controller.trackerInterface sent_messages][0];
+                    NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
                     NSString *descriptionText;
                     [invocation getArgument:&descriptionText atIndex:3];
                     descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
