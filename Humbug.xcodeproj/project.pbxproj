@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2CFD6C781B55DD8A00295A6D /* NSData+BUGCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFD6C771B55DD8A00295A6D /* NSData+BUGCompression.m */; };
-		2CFD6C791B55DD8A00295A6D /* NSData+BUGCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFD6C771B55DD8A00295A6D /* NSData+BUGCompression.m */; };
 		2CFD6C731B55BD7600295A6D /* BUGTrelloInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFD6C721B55BD7600295A6D /* BUGTrelloInterface.m */; };
 		2CFD6C741B55BD7600295A6D /* BUGTrelloInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFD6C721B55BD7600295A6D /* BUGTrelloInterface.m */; };
+		2CFD6C801B56F2BA00295A6D /* NSData+BUGCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFD6C7F1B56F2BA00295A6D /* NSData+BUGCompression.m */; };
+		2CFD6C811B56F2BA00295A6D /* NSData+BUGCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFD6C7F1B56F2BA00295A6D /* NSData+BUGCompression.m */; };
+		2CFD6C8E1B56F42000295A6D /* BUGTrelloInterface+Spec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFD6C8D1B56F42000295A6D /* BUGTrelloInterface+Spec.m */; };
 		C926578919D1EC2500C995E7 /* libCedar-StaticLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A2BBD019AFBC0600662321 /* libCedar-StaticLib.a */; };
 		C95A286A19B137FB00535906 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A2B39A19AFA66100662321 /* Foundation.framework */; };
 		C95A286B19B137FB00535906 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A2B3CB19AFA9D500662321 /* CoreGraphics.framework */; };
@@ -230,6 +231,10 @@
 		2CFD6C661B55BCD100295A6D /* BUGInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BUGInterface.h; path = Domain/Interfaces/BUGInterface.h; sourceTree = "<group>"; };
 		2CFD6C711B55BD7600295A6D /* BUGTrelloInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BUGTrelloInterface.h; path = Domain/Interfaces/BUGTrelloInterface.h; sourceTree = "<group>"; };
 		2CFD6C721B55BD7600295A6D /* BUGTrelloInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BUGTrelloInterface.m; path = Domain/Interfaces/BUGTrelloInterface.m; sourceTree = "<group>"; };
+		2CFD6C7E1B56F2BA00295A6D /* NSData+BUGCompression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+BUGCompression.h"; path = "Domain/Extensions/NSData+BUGCompression.h"; sourceTree = "<group>"; };
+		2CFD6C7F1B56F2BA00295A6D /* NSData+BUGCompression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+BUGCompression.m"; path = "Domain/Extensions/NSData+BUGCompression.m"; sourceTree = "<group>"; };
+		2CFD6C8C1B56F42000295A6D /* BUGTrelloInterface+Spec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "BUGTrelloInterface+Spec.h"; sourceTree = "<group>"; };
+		2CFD6C8D1B56F42000295A6D /* BUGTrelloInterface+Spec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "BUGTrelloInterface+Spec.m"; sourceTree = "<group>"; };
 		C95A284E19B12F5400535906 /* Cedar-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Cedar-iOS.framework"; path = "Specs/Frameworks/Cedar-iOS.framework"; sourceTree = "<group>"; };
 		C95A286919B137FB00535906 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C95A286F19B137FB00535906 /* Demo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Demo-Info.plist"; sourceTree = "<group>"; };
@@ -416,8 +421,8 @@
 		2CFD6C751B55DD4700295A6D /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				2CFD6C761B55DD8A00295A6D /* NSData+BUGCompression.h */,
-				2CFD6C771B55DD8A00295A6D /* NSData+BUGCompression.m */,
+				2CFD6C7E1B56F2BA00295A6D /* NSData+BUGCompression.h */,
+				2CFD6C7F1B56F2BA00295A6D /* NSData+BUGCompression.m */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -479,6 +484,8 @@
 			children = (
 				C9710F4F19B11BC6009173DE /* BUGPivotalTrackerInterface+Spec.h */,
 				C9710F5019B11BC6009173DE /* BUGPivotalTrackerInterface+Spec.m */,
+				2CFD6C8C1B56F42000295A6D /* BUGTrelloInterface+Spec.h */,
+				2CFD6C8D1B56F42000295A6D /* BUGTrelloInterface+Spec.m */,
 			);
 			name = Stubs;
 			sourceTree = "<group>";
@@ -1041,7 +1048,6 @@
 				C99EEBD419B659130039B82D /* UIWindow+BUG.m in Sources */,
 				C9B57F2019F8CA31001B946A /* FLEXArgumentInputFontsPickerView.m in Sources */,
 				C9B57F5C19F8CA31001B946A /* FLEXArrayExplorerViewController.m in Sources */,
-				2CFD6C791B55DD8A00295A6D /* NSData+BUGCompression.m in Sources */,
 				C9B57F4619F8CA31001B946A /* FLEXManager.m in Sources */,
 				C9B57F6C19F8CA31001B946A /* FLEXObjectExplorerViewController.m in Sources */,
 				C9B57F6E19F8CA31001B946A /* FLEXSetExplorerViewController.m in Sources */,
@@ -1094,6 +1100,7 @@
 				2CFD6C741B55BD7600295A6D /* BUGTrelloInterface.m in Sources */,
 				C9B57F5019F8CA31001B946A /* FLEXFileBrowserTableViewController.m in Sources */,
 				C9B57F6019F8CA31001B946A /* FLEXDefaultsExplorerViewController.m in Sources */,
+				2CFD6C811B56F2BA00295A6D /* NSData+BUGCompression.m in Sources */,
 				C9B57F4019F8CA31001B946A /* FLEXPropertyEditorViewController.m in Sources */,
 				C9B57F6819F8CA31001B946A /* FLEXImageExplorerViewController.m in Sources */,
 				C9B57F7819F8CA31001B946A /* FLEXRuntimeUtility.m in Sources */,
@@ -1110,11 +1117,11 @@
 				C9B57F2319F8CA31001B946A /* FLEXArgumentInputJSONObjectView.m in Sources */,
 				C9B57F5919F8CA31001B946A /* FLEXWebViewController.m in Sources */,
 				C9710F5119B11BC6009173DE /* BUGPivotalTrackerInterface+Spec.m in Sources */,
-				2CFD6C781B55DD8A00295A6D /* NSData+BUGCompression.m in Sources */,
 				C9B57F6319F8CA31001B946A /* FLEXDictionaryExplorerViewController.m in Sources */,
 				C9B57F4B19F8CA31001B946A /* FLEXClassesTableViewController.m in Sources */,
 				C9B57F7B19F8CA31001B946A /* FLEXHierarchyTableViewCell.m in Sources */,
 				C9B57F3519F8CA31001B946A /* FLEXDefaultEditorViewController.m in Sources */,
+				2CFD6C8E1B56F42000295A6D /* BUGTrelloInterface+Spec.m in Sources */,
 				C9A2B43019AFB18200662321 /* UIWindow+BUG.m in Sources */,
 				C9B57F2919F8CA31001B946A /* FLEXArgumentInputStringView.m in Sources */,
 				C9A2B43619AFB2B500662321 /* BUGPivotalTrackerInterface.m in Sources */,
@@ -1136,6 +1143,7 @@
 				C9B57F5319F8CA31001B946A /* FLEXInstancesTableViewController.m in Sources */,
 				C9B57F6719F8CA31001B946A /* FLEXImageExplorerViewController.m in Sources */,
 				C9B57F5719F8CA31001B946A /* FLEXLiveObjectsTableViewController.m in Sources */,
+				2CFD6C801B56F2BA00295A6D /* NSData+BUGCompression.m in Sources */,
 				C9B57F4919F8CA31001B946A /* FLEXWindow.m in Sources */,
 				C9B57F3B19F8CA31001B946A /* FLEXIvarEditorViewController.m in Sources */,
 				C9B57F2D19F8CA31001B946A /* FLEXArgumentInputSwitchView.m in Sources */,

@@ -2,6 +2,7 @@
 #import "BUGPivotalTrackerInterface.h"
 #import "MBProgressHUD.h"
 #import "FLEXManager.h"
+#import "BUGTrelloInterface.h"
 
 @interface BUGViewController () <UITextViewDelegate, UITextFieldDelegate>
 
@@ -48,16 +49,19 @@ static NSString *storyDescriptionPlaceholderText = @"Bug Description";
     return debugViewController__ = [[BUGViewController alloc] initWithLogFileData:logData trackerAPIToken:token trackerProjectID:projectID];
 }
 
++ (instancetype)createSharedInstanceWithLogFileData:(NSData * (^)())logData trelloAppKey:(NSString *)appKey trelloAuthToken:(NSString *)authToken trelloListID:(NSString *)listID {
+    return debugViewController__ = [[BUGViewController alloc] initWithLogFileData:logData trelloAppKey:appKey trelloAuthToken:authToken trelloListID:listID];
+}
+
 + (instancetype)sharedInstance {
     if (!debugViewController__) {
-        [NSException raise:@"BUGViewController" format:@"The BUGViewController must first be created with createSharedInstanceWithLogFileData:trackerAPIToken:trackerProjectID:"];
+        [NSException raise:@"BUGViewController" format:@"The BUGViewController must first be created with createSharedInstanceWithLogFileData:…"];
     }
     return debugViewController__;
 }
 
-- (instancetype)initWithLogFileData:(NSData * (^)())logData trackerAPIToken:(NSString *)token trackerProjectID:(NSString *)projectID {
+- (instancetype)initLogFileData:(NSData * (^)())logData {
     if (self = [super init]) {
-        self.interface = [[BUGPivotalTrackerInterface alloc] initWithAPIToken:token trackerProjectID:projectID];
         self.title = @"Debug";
         self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
         self.window.windowLevel = UIWindowLevelStatusBar;
@@ -71,12 +75,32 @@ static NSString *storyDescriptionPlaceholderText = @"Bug Description";
     return self;
 }
 
+- (instancetype)initWithLogFileData:(NSData * (^)())logData trackerAPIToken:(NSString *)token trackerProjectID:(NSString *)projectID {
+    if (self = [self initLogFileData:logData]) {
+        self.interface = [[BUGPivotalTrackerInterface alloc] initWithAPIToken:token trackerProjectID:projectID];
+    }
+    return self;
+}
+
+- (instancetype)initWithLogFileData:(NSData * (^)())logData trelloAppKey:(NSString *)appKey trelloAuthToken:(NSString *)authToken trelloListID:(NSString *)listID {
+    if (self = [self initLogFileData:logData]) {
+        self.interface = [[BUGTrelloInterface alloc] initWithAppKey:appKey authToken:authToken listID:listID];
+    }
+    return self;
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    if ([self.interface isKindOfClass:[BUGPivotalTrackerInterface class]]) {
+        self.bugDestinationLabel.text = @"Pivotal Tracker";
+    } else {
+        self.bugDestinationLabel.text = @"Trello";
+    }
     
     self.storyTitleTextView.editable = YES;
     self.storyTitleTextView.backgroundColor = [UIColor whiteColor];
@@ -128,8 +152,8 @@ static NSString *storyDescriptionPlaceholderText = @"Bug Description";
 }
 
 - (void)configureTextFontAndColor {
-    self.trackerTitleLabel.font = [UIFont systemFontOfSize:19];
-    self.trackerTitleLabel.textColor = [self darkGreyColor];
+    self.bugDestinationLabel.font = [UIFont systemFontOfSize:19];
+    self.bugDestinationLabel.textColor = [self darkGreyColor];
     
     self.attachmentsLabel.font = [UIFont systemFontOfSize:17];
     self.attachmentsLabel.textColor = [self darkGreyColor];

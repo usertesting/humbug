@@ -1,6 +1,7 @@
 #import "BUGViewController.h"
 #import "UIAlertView+Spec.h"
 #import "BUGPivotalTrackerInterface+Spec.h"
+#import "BUGTrelloInterface+Spec.h"
 #import "MBProgressHUD.h"
 #import "FLEXManager.h"
 #import "BUGInterface.h"
@@ -190,10 +191,8 @@ describe(@"BUGViewController", ^{
             controller.navigationItem.leftBarButtonItem.title should equal(@"Cancel");
         });
         
-        it(@"should have a 'Pivotal Tracker' label textView", ^{
-        });
-        
-        it(@"should have a 'Pivotal Tracker' label textView", ^{
+        it(@"should have a label indicating the Bugs destination", ^{
+            controller.bugDestinationLabel.superview should equal(controller.contentView);
         });
         
         describe(@"story title input views", ^{
@@ -264,27 +263,43 @@ describe(@"BUGViewController", ^{
         });
     });
     
-    describe(@"when the 'Cancel' button is tapped", ^{
-        beforeEach(^{
-            spy_on(controller.interface);
-            controller.attachScreenShotSwitch.on = YES;
-            controller.attachScreenShotSwitch.on = YES;
-            controller.storyTitleTextView.text = @"A Bug's Life";
-            controller.storyDescriptionTextView.text = @"Ants";
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-            [controller.navigationItem.leftBarButtonItem.target performSelector:controller.navigationItem.leftBarButtonItem.action withObject:nil];
-            #pragma clang diagnostic pop
+    describe(@"when 'Cancel' is tapped", ^{
+        sharedExamplesFor(@"when the 'Cancel' button is tapped", ^(NSDictionary *sharedContext) {
+            beforeEach(^{
+                spy_on(controller.interface);
+                controller.attachScreenShotSwitch.on = YES;
+                controller.attachScreenShotSwitch.on = YES;
+                controller.storyTitleTextView.text = @"A Bug's Life";
+                controller.storyDescriptionTextView.text = @"Ants";
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                [controller.navigationItem.leftBarButtonItem.target performSelector:controller.navigationItem.leftBarButtonItem.action withObject:nil];
+                #pragma clang diagnostic pop
+            });
+            
+            itShouldBehaveLike(@"the default view configuration");
+            
+            it(@"should hide the controller", ^{
+                controller.window.isHidden should be_truthy;
+            });
+            
+            it(@"should tell the interface to cancel", ^{
+                controller.interface should have_received(@selector(cancel));
+            });
         });
         
-        itShouldBehaveLike(@"the default view configuration");
-
-        it(@"should hide the controller", ^{
-            controller.window.isHidden should be_truthy;
+        context(@"when initialized for Pivotal Tracker", ^{
+            itShouldBehaveLike(@"when the 'Cancel' button is tapped");
         });
         
-        it(@"should tell the interface to cancel", ^{
-            controller.interface should have_received(@selector(cancel));
+        context(@"when initialized for Trello", ^{
+            beforeEach(^{
+                controller = [BUGViewController createSharedInstanceWithLogFileData:logFileDataBlock trackerAPIToken:nil trackerProjectID:nil];
+                [BUGViewController showHideDebugWindow];
+                controller.view should_not be_nil;
+            });
+            
+            itShouldBehaveLike(@"when the 'Cancel' button is tapped");
         });
     });
     
@@ -315,283 +330,302 @@ describe(@"BUGViewController", ^{
         });
     });
     
-    describe(@"when the 'Submit' button is tapped", ^{
-        beforeEach(^{
-            [BUGPivotalTrackerInterface beginOpaqueTestMode];
-            [controller.storyTitleTextView becomeFirstResponder];
-        });
-        
-        sharedExamplesFor(@"when a create story request completes successfully", ^(NSDictionary *sharedContext) {
+    describe(@"when 'Submit' is tapped", ^{
+        sharedExamplesFor(@"when the 'Submit' button is tapped", ^(NSDictionary *sharedContext) {
             beforeEach(^{
-                [BUGPivotalTrackerInterface completeCreateStoryWithSuccess];
+                [BUGPivotalTrackerInterface beginOpaqueTestMode];
+                [BUGTrelloInterface beginOpaqueTestMode];
+                [controller.storyTitleTextView becomeFirstResponder];
             });
             
-            it(@"should indicate success with the HUD", ^{
-                [MBProgressHUD HUDForView:controller.view].labelText should equal(@"Success");
-            });
-            
-            itShouldBehaveLike(@"the default view configuration");
-            
-            it(@"should dismiss the controller", ^{
-                controller.window.isHidden should be_truthy;
-            });
-            
-            it(@"should dismiss the keyboard if visible", ^{
-                controller.storyTitleTextView.isFirstResponder should_not be_truthy;
-            });
-        });
-        
-        sharedExamplesFor(@"when a create story request fails", ^(NSDictionary *sharedContext) {
-            beforeEach(^{
-                [BUGPivotalTrackerInterface completeCreateStoryWithError:[NSError errorWithDomain:@"Ant Hill" code:0 userInfo:nil]];
-            });
-            
-            it(@"should indicate faliure with the HUD", ^{
-                [MBProgressHUD HUDForView:controller.view].labelText should equal(@"Failed");
-            });
-
-            it(@"should not reset the view to the default configuration", ^{
-                controller.storyTitleTextView.text should_not equal(@"");
-            });
-            
-            it(@"should not dismiss the controller", ^{
-                controller.window.isHidden should_not be_truthy;
-            });
-            it(@"should dismiss the keyboard if visible", ^{
-                controller.storyTitleTextView.isFirstResponder should_not be_truthy;
-            });
-        });
-        
-        context(@"when a 'Bug Title' has not been added", ^{
-            beforeEach(^{
-                spy_on(controller.storyTitleTextView);
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                [controller.navigationItem.rightBarButtonItem.target performSelector:controller.navigationItem.rightBarButtonItem.action withObject:nil];
-                #pragma clang diagnostic pop
-            });
-            
-            it(@"should present an alert", ^{
-                [UIAlertView currentAlertView] should_not be_nil;
-                [UIAlertView currentAlertView].title should equal(@"Bugs need names");
-                [UIAlertView currentAlertView].message should equal(@"Please add a descriptive title.");
-                [[UIAlertView currentAlertView] buttonTitleAtIndex:0] should equal(@"OK");
-            });
-            
-            context(@"when the 'OK' button is tapped", ^{
+            sharedExamplesFor(@"when a create story request completes successfully", ^(NSDictionary *sharedContext) {
                 beforeEach(^{
-                    [[UIAlertView currentAlertView] dismissWithClickedButtonIndex:0 animated:NO];
+                    [BUGPivotalTrackerInterface completeCreateStoryWithSuccess];
+                    [BUGTrelloInterface completeCreateStoryWithSuccess];
                 });
                 
-                it(@"should dismiss the alert", ^{
-                    [UIAlertView currentAlertView] should be_nil;
+                it(@"should indicate success with the HUD", ^{
+                    [MBProgressHUD HUDForView:controller.view].labelText should equal(@"Success");
                 });
                 
-                it(@"should place the cursor in the 'Bug Title' textView", ^{
-                    // does not become first responder until the alert finishes dismissing.
-                    controller.storyTitleTextView should have_received("becomeFirstResponder");
-                });
-            });
-        });
-        
-        context(@"when a 'Requestor's Name' has not been added", ^{
-            beforeEach(^{
-                spy_on(controller.requestorNameTextField);
-                [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"humbug.requestorsName"];
-                controller.requestorNameTextField.text = nil;
-                controller.storyTitleTextView.text = @"a story title";
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                [controller.navigationItem.rightBarButtonItem.target performSelector:controller.navigationItem.rightBarButtonItem.action withObject:nil];
-                #pragma clang diagnostic pop
-            });
-            
-            it(@"should present an alert", ^{
-                [UIAlertView currentAlertView] should_not be_nil;
-                [UIAlertView currentAlertView].title should equal(@"Requestor");
-                [UIAlertView currentAlertView].message should equal(@"Please provide your name.");
-                [[UIAlertView currentAlertView] buttonTitleAtIndex:0] should equal(@"OK");
-            });
-            
-            context(@"when the 'OK' button is tapped", ^{
-                beforeEach(^{
-                    [[UIAlertView currentAlertView] dismissWithClickedButtonIndex:0 animated:NO];
-                });
+                itShouldBehaveLike(@"the default view configuration");
                 
-                it(@"should dismiss the alert", ^{
-                    [UIAlertView currentAlertView] should be_nil;
-                });
-                
-                it(@"should place the cursor in the 'Requestor's Name' textView", ^{
-                    // does not become first responder until the alert finishes dismissing.
-                    controller.requestorNameTextField should have_received(@selector(becomeFirstResponder));
-                });
-            });
-        });
-
-        context(@"when a 'Bug Title' and 'Requestor's Name' have been added", ^{
-            __block NSString *storyTitle;
-            __block NSString *requestorName;
-
-            beforeEach(^{
-                spy_on(controller.interface);
-                storyTitle = @"A Bug's Life";
-                controller.storyTitleTextView.text = storyTitle;
-                requestorName = @"Flik";
-                controller.requestorNameTextField.text = requestorName;
-                [controller textFieldDidEndEditing:controller.requestorNameTextField];
-            });
-            
-            context(@"and nothing else", ^{
-                beforeEach(^{
-                    #pragma clang diagnostic push
-                    #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                    [controller.navigationItem.rightBarButtonItem.target performSelector:controller.navigationItem.rightBarButtonItem.action withObject:nil];
-                    #pragma clang diagnostic pop
-                });
-                
-                it(@"should present a HUD", ^{
-                    [MBProgressHUD HUDForView:controller.view] should_not be_nil;
-                });
-                
-                it(@"should file the bug with the entered title", ^{
-                    controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(nil).with(Arguments::anything);
-                });
-                
-                it(@"should include the requestor's name, the date, and the App version number in the description", ^{
-                    NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
-                    NSString *descriptionText;
-                    [invocation getArgument:&descriptionText atIndex:3];
-                    descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
-                    descriptionText should contain([NSString stringWithFormat:@"Version: %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]]);
-                    descriptionText should contain([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
-                    descriptionText should contain([NSString stringWithFormat:@"Requestor: %@", requestorName]);
+                it(@"should dismiss the controller", ^{
+                    controller.window.isHidden should be_truthy;
                 });
                 
                 it(@"should dismiss the keyboard if visible", ^{
                     controller.storyTitleTextView.isFirstResponder should_not be_truthy;
                 });
-                
-                itShouldBehaveLike(@"when a create story request completes successfully");
-                
-                itShouldBehaveLike(@"when a create story request fails");
-                
             });
             
-            context(@"and a description has been added", ^{
-                __block NSString *storyDescription;
-                
+            sharedExamplesFor(@"when a create story request fails", ^(NSDictionary *sharedContext) {
                 beforeEach(^{
-                    storyDescription = @"A description";
-                    controller.storyDescriptionTextView.text = storyDescription;
-                    #pragma clang diagnostic push
-                    #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                    [controller.navigationItem.rightBarButtonItem.target performSelector:controller.navigationItem.rightBarButtonItem.action withObject:nil];
-                    #pragma clang diagnostic pop
-                });
-
-                it(@"should present a HUD", ^{
-                    [MBProgressHUD HUDForView:controller.view] should_not be_nil;
+                    [BUGPivotalTrackerInterface completeCreateStoryWithError:[NSError errorWithDomain:@"Ant Hill" code:0 userInfo:nil]];
+                    [BUGTrelloInterface completeCreateStoryWithError:[NSError errorWithDomain:@"Ant Hill" code:0 userInfo:nil]];
                 });
                 
-                it(@"should file the bug with the entered title", ^{
-                    controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(nil).with(Arguments::anything);
+                it(@"should indicate faliure with the HUD", ^{
+                    [MBProgressHUD HUDForView:controller.view].labelText should equal(@"Failed");
                 });
                 
-                it(@"should include the requestor's name, the date, and the App version number in the description", ^{
-                    NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
-                    NSString *descriptionText;
-                    [invocation getArgument:&descriptionText atIndex:3];
-                    descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
-                    descriptionText should contain([NSString stringWithFormat:@"Version: %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]]);
-                    descriptionText should contain([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
-                    descriptionText should contain([NSString stringWithFormat:@"Requestor: %@", requestorName]);
-                    descriptionText should contain(storyDescription);
+                it(@"should not reset the view to the default configuration", ^{
+                    controller.storyTitleTextView.text should_not equal(@"");
                 });
                 
+                it(@"should not dismiss the controller", ^{
+                    controller.window.isHidden should_not be_truthy;
+                });
                 it(@"should dismiss the keyboard if visible", ^{
                     controller.storyTitleTextView.isFirstResponder should_not be_truthy;
                 });
-                
-                itShouldBehaveLike(@"when a create story request completes successfully");
-                
-                itShouldBehaveLike(@"when a create story request fails");
-
             });
             
-            context(@"and a the logs switch is on", ^{
+            context(@"when a 'Bug Title' has not been added", ^{
                 beforeEach(^{
-                    controller.attachLogsSwitch.on = YES;
-                    #pragma clang diagnostic push
-                    #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                    spy_on(controller.storyTitleTextView);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                     [controller.navigationItem.rightBarButtonItem.target performSelector:controller.navigationItem.rightBarButtonItem.action withObject:nil];
-                    #pragma clang diagnostic pop
+#pragma clang diagnostic pop
                 });
                 
-                it(@"should present a HUD", ^{
-                    [MBProgressHUD HUDForView:controller.view] should_not be_nil;
+                it(@"should present an alert", ^{
+                    [UIAlertView currentAlertView] should_not be_nil;
+                    [UIAlertView currentAlertView].title should equal(@"Bugs need names");
+                    [UIAlertView currentAlertView].message should equal(@"Please add a descriptive title.");
+                    [[UIAlertView currentAlertView] buttonTitleAtIndex:0] should equal(@"OK");
                 });
                 
-                it(@"should file the bug with the entered title", ^{
-                    controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(logFileData).with(Arguments::anything);
+                context(@"when the 'OK' button is tapped", ^{
+                    beforeEach(^{
+                        [[UIAlertView currentAlertView] dismissWithClickedButtonIndex:0 animated:NO];
+                    });
+                    
+                    it(@"should dismiss the alert", ^{
+                        [UIAlertView currentAlertView] should be_nil;
+                    });
+                    
+                    it(@"should place the cursor in the 'Bug Title' textView", ^{
+                        // does not become first responder until the alert finishes dismissing.
+                        controller.storyTitleTextView should have_received("becomeFirstResponder");
+                    });
                 });
-                
-                it(@"should include the requestor's name, the date, and the App version number in the description", ^{
-                    NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
-                    NSString *descriptionText;
-                    [invocation getArgument:&descriptionText atIndex:3];
-                    descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
-                    descriptionText should contain([NSString stringWithFormat:@"Version: %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]]);
-                    descriptionText should contain([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
-                    descriptionText should contain([NSString stringWithFormat:@"Requestor: %@", requestorName]);
-                });
-
-                it(@"should dismiss the keyboard if visible", ^{
-                    controller.storyTitleTextView.isFirstResponder should_not be_truthy;
-                });
-
-                itShouldBehaveLike(@"when a create story request completes successfully");
-                
-                itShouldBehaveLike(@"when a create story request fails");
-
             });
             
-            context(@"and a the screen shot switch is on", ^{
+            context(@"when a 'Requestor's Name' has not been added", ^{
                 beforeEach(^{
-                    controller.attachScreenShotSwitch.on = YES;
-                    #pragma clang diagnostic push
-                    #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                    spy_on(controller.requestorNameTextField);
+                    [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"humbug.requestorsName"];
+                    controller.requestorNameTextField.text = nil;
+                    controller.storyTitleTextView.text = @"a story title";
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                     [controller.navigationItem.rightBarButtonItem.target performSelector:controller.navigationItem.rightBarButtonItem.action withObject:nil];
-                    #pragma clang diagnostic pop
+#pragma clang diagnostic pop
                 });
                 
-                it(@"should present a HUD", ^{
-                    [MBProgressHUD HUDForView:controller.view] should_not be_nil;
+                it(@"should present an alert", ^{
+                    [UIAlertView currentAlertView] should_not be_nil;
+                    [UIAlertView currentAlertView].title should equal(@"Requestor");
+                    [UIAlertView currentAlertView].message should equal(@"Please provide your name.");
+                    [[UIAlertView currentAlertView] buttonTitleAtIndex:0] should equal(@"OK");
                 });
                 
-                it(@"should file the bug", ^{
-                    controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(Arguments::anything).with(nil).with(Arguments::anything);
+                context(@"when the 'OK' button is tapped", ^{
+                    beforeEach(^{
+                        [[UIAlertView currentAlertView] dismissWithClickedButtonIndex:0 animated:NO];
+                    });
+                    
+                    it(@"should dismiss the alert", ^{
+                        [UIAlertView currentAlertView] should be_nil;
+                    });
+                    
+                    it(@"should place the cursor in the 'Requestor's Name' textView", ^{
+                        // does not become first responder until the alert finishes dismissing.
+                        controller.requestorNameTextField should have_received(@selector(becomeFirstResponder));
+                    });
                 });
-                
-                it(@"should include the requestor's name, the date, and the App version number in the description", ^{
-                    NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
-                    NSString *descriptionText;
-                    [invocation getArgument:&descriptionText atIndex:3];
-                    descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
-                    descriptionText should contain([NSString stringWithFormat:@"Version: %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]]);
-                    descriptionText should contain([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
-                    descriptionText should contain([NSString stringWithFormat:@"Requestor: %@", requestorName]);
-                });
-
-                it(@"should dismiss the keyboard if visible", ^{
-                    controller.storyTitleTextView.isFirstResponder should_not be_truthy;
-                });
-                
-                itShouldBehaveLike(@"when a create story request completes successfully");
-                
-                itShouldBehaveLike(@"when a create story request fails");
-
             });
+            
+            context(@"when a 'Bug Title' and 'Requestor's Name' have been added", ^{
+                __block NSString *storyTitle;
+                __block NSString *requestorName;
+                
+                beforeEach(^{
+                    spy_on(controller.interface);
+                    storyTitle = @"A Bug's Life";
+                    controller.storyTitleTextView.text = storyTitle;
+                    requestorName = @"Flik";
+                    controller.requestorNameTextField.text = requestorName;
+                    [controller textFieldDidEndEditing:controller.requestorNameTextField];
+                });
+                
+                context(@"and nothing else", ^{
+                    beforeEach(^{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                        [controller.navigationItem.rightBarButtonItem.target performSelector:controller.navigationItem.rightBarButtonItem.action withObject:nil];
+#pragma clang diagnostic pop
+                    });
+                    
+                    it(@"should present a HUD", ^{
+                        [MBProgressHUD HUDForView:controller.view] should_not be_nil;
+                    });
+                    
+                    it(@"should file the bug with the entered title", ^{
+                        controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(nil).with(Arguments::anything);
+                    });
+                    
+                    it(@"should include the requestor's name, the date, and the App version number in the description", ^{
+                        NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
+                        NSString *descriptionText;
+                        [invocation getArgument:&descriptionText atIndex:3];
+                        descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
+                        descriptionText should contain([NSString stringWithFormat:@"Version: %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]]);
+                        descriptionText should contain([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
+                        descriptionText should contain([NSString stringWithFormat:@"Requestor: %@", requestorName]);
+                    });
+                    
+                    it(@"should dismiss the keyboard if visible", ^{
+                        controller.storyTitleTextView.isFirstResponder should_not be_truthy;
+                    });
+                    
+                    itShouldBehaveLike(@"when a create story request completes successfully");
+                    
+                    itShouldBehaveLike(@"when a create story request fails");
+                    
+                });
+                
+                context(@"and a description has been added", ^{
+                    __block NSString *storyDescription;
+                    
+                    beforeEach(^{
+                        storyDescription = @"A description";
+                        controller.storyDescriptionTextView.text = storyDescription;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                        [controller.navigationItem.rightBarButtonItem.target performSelector:controller.navigationItem.rightBarButtonItem.action withObject:nil];
+#pragma clang diagnostic pop
+                    });
+                    
+                    it(@"should present a HUD", ^{
+                        [MBProgressHUD HUDForView:controller.view] should_not be_nil;
+                    });
+                    
+                    it(@"should file the bug with the entered title", ^{
+                        controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(nil).with(Arguments::anything);
+                    });
+                    
+                    it(@"should include the requestor's name, the date, and the App version number in the description", ^{
+                        NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
+                        NSString *descriptionText;
+                        [invocation getArgument:&descriptionText atIndex:3];
+                        descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
+                        descriptionText should contain([NSString stringWithFormat:@"Version: %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]]);
+                        descriptionText should contain([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
+                        descriptionText should contain([NSString stringWithFormat:@"Requestor: %@", requestorName]);
+                        descriptionText should contain(storyDescription);
+                    });
+                    
+                    it(@"should dismiss the keyboard if visible", ^{
+                        controller.storyTitleTextView.isFirstResponder should_not be_truthy;
+                    });
+                    
+                    itShouldBehaveLike(@"when a create story request completes successfully");
+                    
+                    itShouldBehaveLike(@"when a create story request fails");
+                    
+                });
+                
+                context(@"and a the logs switch is on", ^{
+                    beforeEach(^{
+                        controller.attachLogsSwitch.on = YES;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                        [controller.navigationItem.rightBarButtonItem.target performSelector:controller.navigationItem.rightBarButtonItem.action withObject:nil];
+#pragma clang diagnostic pop
+                    });
+                    
+                    it(@"should present a HUD", ^{
+                        [MBProgressHUD HUDForView:controller.view] should_not be_nil;
+                    });
+                    
+                    it(@"should file the bug with the entered title", ^{
+                        controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(nil).with(logFileData).with(Arguments::anything);
+                    });
+                    
+                    it(@"should include the requestor's name, the date, and the App version number in the description", ^{
+                        NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
+                        NSString *descriptionText;
+                        [invocation getArgument:&descriptionText atIndex:3];
+                        descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
+                        descriptionText should contain([NSString stringWithFormat:@"Version: %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]]);
+                        descriptionText should contain([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
+                        descriptionText should contain([NSString stringWithFormat:@"Requestor: %@", requestorName]);
+                    });
+                    
+                    it(@"should dismiss the keyboard if visible", ^{
+                        controller.storyTitleTextView.isFirstResponder should_not be_truthy;
+                    });
+                    
+                    itShouldBehaveLike(@"when a create story request completes successfully");
+                    
+                    itShouldBehaveLike(@"when a create story request fails");
+                    
+                });
+                
+                context(@"and a the screen shot switch is on", ^{
+                    beforeEach(^{
+                        controller.attachScreenShotSwitch.on = YES;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                        [controller.navigationItem.rightBarButtonItem.target performSelector:controller.navigationItem.rightBarButtonItem.action withObject:nil];
+#pragma clang diagnostic pop
+                    });
+                    
+                    it(@"should present a HUD", ^{
+                        [MBProgressHUD HUDForView:controller.view] should_not be_nil;
+                    });
+                    
+                    it(@"should file the bug", ^{
+                        controller.interface should have_received(@selector(createStoryWithStoryTitle:storyDescription:image:text:completion:)).with(storyTitle).with(Arguments::any([NSString class])).with(Arguments::anything).with(nil).with(Arguments::anything);
+                    });
+                    
+                    it(@"should include the requestor's name, the date, and the App version number in the description", ^{
+                        NSInvocation *invocation = [(id<CedarDouble>)controller.interface sent_messages][0];
+                        NSString *descriptionText;
+                        [invocation getArgument:&descriptionText atIndex:3];
+                        descriptionText should contain([NSString stringWithFormat:@"Date: %@", [NSDateFormatter localizedStringFromDate:[NSDate date] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle]]);
+                        descriptionText should contain([NSString stringWithFormat:@"Version: %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]]);
+                        descriptionText should contain([[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
+                        descriptionText should contain([NSString stringWithFormat:@"Requestor: %@", requestorName]);
+                    });
+                    
+                    it(@"should dismiss the keyboard if visible", ^{
+                        controller.storyTitleTextView.isFirstResponder should_not be_truthy;
+                    });
+                    
+                    itShouldBehaveLike(@"when a create story request completes successfully");
+                    
+                    itShouldBehaveLike(@"when a create story request fails");
+                    
+                });
+            });
+        });
+        
+        context(@"when initialized for Pivotal Tracker", ^{
+            itShouldBehaveLike(@"when the 'Submit' button is tapped");
+        });
+        
+        context(@"when initialized for Trello", ^{
+            beforeEach(^{
+                controller = [BUGViewController createSharedInstanceWithLogFileData:logFileDataBlock trackerAPIToken:nil trackerProjectID:nil];
+                [BUGViewController showHideDebugWindow];
+                controller.view should_not be_nil;
+            });
+            
+            itShouldBehaveLike(@"when the 'Submit' button is tapped");
         });
     });
     

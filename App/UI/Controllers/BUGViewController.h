@@ -2,7 +2,7 @@
 
 @interface BUGViewController : UIViewController
 
-@property (weak, nonatomic) IBOutlet UILabel *trackerTitleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *bugDestinationLabel;
 @property (weak, nonatomic) IBOutlet UITextView *storyTitleTextView;
 @property (weak, nonatomic) IBOutlet UITextView *storyDescriptionTextView;
 @property (weak, nonatomic) IBOutlet UILabel *attachmentsLabel;
@@ -18,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 
 + (instancetype)createSharedInstanceWithLogFileData:(NSData * (^)())logData trackerAPIToken:(NSString *)token trackerProjectID:(NSString *)projectID;
++ (instancetype)createSharedInstanceWithLogFileData:(NSData * (^)())logData trelloAppKey:(NSString *)appKey trelloAuthToken:(NSString *)authToken trelloListID:(NSString *)listID;
 + (instancetype)sharedInstance;
 
 + (void)showHideDebugWindow;
